@@ -15,6 +15,8 @@ import model.Room;
 import utils.FileHandler;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -23,7 +25,8 @@ public class BookingController implements Initializable {
     // ── Tab 1 — Bookings ─────────────────────────────────────────────────────
     @FXML private TextField        nameField;
     @FXML private TextField        contactField;
-    @FXML private TextField        daysField;
+    @FXML private DatePicker       checkInPicker;
+    @FXML private DatePicker       checkOutPicker;
     @FXML private TextField        searchField;
     @FXML private ComboBox<String> roomType;
 
@@ -35,6 +38,8 @@ public class BookingController implements Initializable {
     @FXML private TableColumn<Customer, String>  nameCol;
     @FXML private TableColumn<Customer, String>  contactCol;
     @FXML private TableColumn<Customer, String>  roomCol;
+    @FXML private TableColumn<Customer, String>  checkInCol;
+    @FXML private TableColumn<Customer, String>  checkOutCol;
     @FXML private TableColumn<Customer, Integer> daysCol;
     @FXML private TableColumn<Customer, Double>  billCol;
     @FXML private TableColumn<Customer, String>  statusCol;
@@ -55,6 +60,8 @@ public class BookingController implements Initializable {
     @FXML private TableColumn<Customer, String>  coNameCol;
     @FXML private TableColumn<Customer, String>  coContactCol;
     @FXML private TableColumn<Customer, String>  coRoomCol;
+    @FXML private TableColumn<Customer, String>  coCheckInCol;
+    @FXML private TableColumn<Customer, String>  coCheckOutCol;
     @FXML private TableColumn<Customer, Integer> coDaysCol;
     @FXML private TableColumn<Customer, Double>  coBillCol;
 
@@ -89,6 +96,8 @@ public class BookingController implements Initializable {
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         contactCol.setCellValueFactory(new PropertyValueFactory<>("contact"));
         roomCol.setCellValueFactory(new PropertyValueFactory<>("roomLabel"));
+        checkInCol.setCellValueFactory(new PropertyValueFactory<>("checkInDate"));
+        checkOutCol.setCellValueFactory(new PropertyValueFactory<>("checkOutDate"));
         daysCol.setCellValueFactory(new PropertyValueFactory<>("days"));
         billCol.setCellValueFactory(new PropertyValueFactory<>("totalBill"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -123,6 +132,8 @@ public class BookingController implements Initializable {
         coNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         coContactCol.setCellValueFactory(new PropertyValueFactory<>("contact"));
         coRoomCol.setCellValueFactory(new PropertyValueFactory<>("roomLabel"));
+        coCheckInCol.setCellValueFactory(new PropertyValueFactory<>("checkInDate"));
+        coCheckOutCol.setCellValueFactory(new PropertyValueFactory<>("checkOutDate"));
         coDaysCol.setCellValueFactory(new PropertyValueFactory<>("days"));
         coBillCol.setCellValueFactory(new PropertyValueFactory<>("totalBill"));
 
@@ -166,6 +177,28 @@ public class BookingController implements Initializable {
 
         updateAvailLabel();
         refreshRoomGrids();
+
+        // Default dates: Today and Tomorrow
+        checkInPicker.setValue(LocalDate.now());
+        checkOutPicker.setValue(LocalDate.now().plusDays(1));
+
+        // Disable past dates for check-in
+        checkInPicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.isBefore(LocalDate.now()));
+            }
+        });
+
+        // Disable past dates and dates before check-in for check-out
+        checkOutPicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.isBefore(checkInPicker.getValue().plusDays(1)));
+            }
+        });
     }
 
     // ── Tab 1: Add Booking ────────────────────────────────────────────────────
@@ -175,22 +208,21 @@ public class BookingController implements Initializable {
         String name     = nameField.getText().trim();
         String contact  = contactField.getText().trim();
         String room     = roomType.getValue();
-        String daysText = daysField.getText().trim();
+        LocalDate checkIn  = checkInPicker.getValue();
+        LocalDate checkOut = checkOutPicker.getValue();
 
-        if (name.isEmpty() || contact.isEmpty() || room == null || daysText.isEmpty()) {
+        if (name.isEmpty() || contact.isEmpty() || room == null || checkIn == null || checkOut == null) {
             showAlert("Please fill all fields!"); return;
         }
         if (!contact.matches("\\d{10}")) {
             showAlert("Contact must be a valid 10-digit number!"); return;
         }
 
-        int days;
-        try {
-            days = Integer.parseInt(daysText);
-            if (days <= 0) throw new NumberFormatException();
-        } catch (NumberFormatException ex) {
-            showAlert("Enter a valid positive number of days!"); return;
+        if (checkOut.isBefore(checkIn.plusDays(1))) {
+            showAlert("Check-out date must be at least one day after check-in!"); return;
         }
+
+        int days = (int) ChronoUnit.DAYS.between(checkIn, checkOut);
 
         Room available = getAvailableRoom(room);
         if (available == null) {
@@ -203,7 +235,8 @@ public class BookingController implements Initializable {
 
         double total = getRoomPrice(room) * days;
         available.book();
-        Customer c = new Customer(name, contact, room, available.getRoomNumber(), "Booked", days, total);
+        Customer c = new Customer(name, contact, room, available.getRoomNumber(), "Booked", days, 
+                                 checkIn.toString(), checkOut.toString(), total);
         data.add(c);
         FileHandler.save(data);
         updateAvailLabel();
@@ -215,7 +248,9 @@ public class BookingController implements Initializable {
         ));
 
         nameField.clear(); contactField.clear();
-        roomType.setValue(null); daysField.clear();
+        roomType.setValue(null);
+        checkInPicker.setValue(LocalDate.now());
+        checkOutPicker.setValue(LocalDate.now().plusDays(1));
     }
 
     // ── Tab 3: Checkout ───────────────────────────────────────────────────────

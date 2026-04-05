@@ -151,6 +151,122 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════ */
+/*  DATE PICKER                                                              */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.date-picker {
+    -fx-background-color: #252b3b;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-text-fill: #e8e8e8;
+}
+
+.date-picker > .text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 9 12;
+}
+
+.date-picker:focused {
+    -fx-border-color: #c9a96e;
+    -fx-effect: dropshadow(gaussian, rgba(201, 169, 110, 0.25), 8, 0, 0, 0);
+}
+
+.date-picker > .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.date-picker > .arrow-button > .arrow {
+    -fx-background-color: #c9a96e;
+}
+
+/* DatePicker Popup Content */
+.date-picker-popup {
+    -fx-background-color: #1a1f2e;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 10);
+}
+
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: #252b3b;
+    -fx-background-radius: 10 10 0 0;
+    -fx-padding: 8 10;
+}
+
+/* Fix for large buttons in calendar header caused by global button style */
+.date-picker-popup .button {
+    -fx-background-color: #363d52;
+    -fx-min-width: 32;
+    -fx-pref-width: 32;
+    -fx-min-height: 32;
+    -fx-padding: 0;
+    -fx-background-radius: 6;
+    -fx-text-fill: #c9a96e;
+}
+
+.date-picker-popup .button:hover {
+    -fx-background-color: #c9a96e;
+    -fx-text-fill: #1a1f2e;
+}
+
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: #e8e8e8;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.date-picker-popup .calendar-grid {
+    -fx-background-color: #1a1f2e;
+    -fx-padding: 10;
+}
+
+/* Day Names (Sun, Mon...) */
+.date-picker-popup .day-name-cell {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 5 0;
+}
+
+/* Individual Day Cells */
+.date-picker-popup .day-cell {
+    -fx-background-color: #1e2435;
+    -fx-text-fill: #d4d8e8;
+    -fx-padding: 8;
+    -fx-border-color: #2a3048;
+    -fx-border-width: 0.5;
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #363d52;
+    -fx-text-fill: #c9a96e;
+}
+
+.date-picker-popup .day-cell.selected {
+    -fx-background-color: #c9a96e;
+    -fx-text-fill: #1a1f2e;
+    -fx-font-weight: bold;
+}
+
+.date-picker-popup .day-cell.today {
+    -fx-text-fill: #c9a96e;
+    -fx-border-color: #c9a96e;
+    -fx-border-width: 1.5;
+}
+
+/* Dates from other months */
+.date-picker-popup .previous-month,
+.date-picker-popup .next-month {
+    -fx-background-color: #161a27;
+    -fx-text-fill: #4b5563;
+    -fx-opacity: 0.6;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
 /*  BUTTONS                                                                  */
 /* ══════════════════════════════════════════════════════════════════════════ */
 .button {

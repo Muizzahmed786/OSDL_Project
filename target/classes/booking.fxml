@@ -35,9 +35,11 @@
                     <ComboBox fx:id="roomType" promptText="Select room type"
                               GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="form-input" maxWidth="Infinity"/>
 
-                    <Label text="Number of Days:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
-                    <TextField fx:id="daysField" promptText="e.g. 3"
-                               GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="form-input"/>
+                    <Label text="Check-in Date:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+                    <DatePicker fx:id="checkInPicker" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="form-input" maxWidth="Infinity"/>
+
+                    <Label text="Check-out Date:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="form-label"/>
+                    <DatePicker fx:id="checkOutPicker" GridPane.rowIndex="4" GridPane.columnIndex="1" styleClass="form-input" maxWidth="Infinity"/>
 
                     <columnConstraints>
                         <ColumnConstraints minWidth="150"/>
@@ -75,6 +77,8 @@
                     <TableColumn fx:id="nameCol"    text="Name"     prefWidth="130"/>
                     <TableColumn fx:id="contactCol" text="Contact"  prefWidth="110"/>
                     <TableColumn fx:id="roomCol"    text="Room"     prefWidth="100"/>
+                    <TableColumn fx:id="checkInCol" text="Check-in"  prefWidth="100"/>
+                    <TableColumn fx:id="checkOutCol" text="Check-out" prefWidth="100"/>
                     <TableColumn fx:id="daysCol"    text="Days"     prefWidth="60"/>
                     <TableColumn fx:id="billCol"    text="Bill (₹)" prefWidth="90"/>
                     <TableColumn fx:id="statusCol"  text="Status"   prefWidth="80"/>
@@ -149,6 +153,8 @@
                     <TableColumn fx:id="coNameCol"    text="Name"     prefWidth="130"/>
                     <TableColumn fx:id="coContactCol" text="Contact"  prefWidth="110"/>
                     <TableColumn fx:id="coRoomCol"    text="Room"     prefWidth="100"/>
+                    <TableColumn fx:id="coCheckInCol" text="Check-in"  prefWidth="100"/>
+                    <TableColumn fx:id="coCheckOutCol" text="Check-out" prefWidth="100"/>
                     <TableColumn fx:id="coDaysCol"    text="Days"     prefWidth="60"/>
                     <TableColumn fx:id="coBillCol"    text="Bill (₹)" prefWidth="90"/>
                 </columns>
