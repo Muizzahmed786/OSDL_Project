@@ -173,4 +173,64 @@
         </VBox>
     </Tab>
 
+    <!-- ══════════════════════════════════════════════════════ TAB 5: MANAGE ROOMS -->
+    <Tab text="🛠️ Manage Rooms">
+        <VBox spacing="16" styleClass="tab-content">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Manage Room Inventory" styleClass="title-label"/>
+
+            <HBox spacing="16">
+                <!-- Add Room Form -->
+                <VBox styleClass="card" spacing="12" prefWidth="300">
+                    <Label text="Add New Room" styleClass="card-title"/>
+                    
+                    <Label text="Room Type:" styleClass="form-label"/>
+                    <ComboBox fx:id="mRoomTypeCombo" promptText="Select Type" styleClass="form-input" maxWidth="Infinity"/>
+                    
+                    <Label text="Room Number:" styleClass="form-label"/>
+                    <TextField fx:id="mRoomNumberField" promptText="e.g. 101" styleClass="form-input"/>
+                    
+                    <Button text="➕ Add Room" onAction="#handleAddRoom" styleClass="btn-primary" maxWidth="Infinity"/>
+                </VBox>
+
+                <!-- Separate Room Views -->
+                <VBox styleClass="card" spacing="10" HBox.hgrow="ALWAYS">
+                    <Label text="Existing Rooms" styleClass="card-title"/>
+                    <HBox spacing="12" VBox.vgrow="ALWAYS">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Single" styleClass="avail-label"/>
+                            <TableView fx:id="mSingleTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                                <columns>
+                                    <TableColumn fx:id="mSingleNumCol" text="No." prefWidth="60"/>
+                                    <TableColumn fx:id="mSingleStatusCol" text="Status" prefWidth="90"/>
+                                </columns>
+                            </TableView>
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Double" styleClass="avail-label"/>
+                            <TableView fx:id="mDoubleTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                                <columns>
+                                    <TableColumn fx:id="mDoubleNumCol" text="No." prefWidth="60"/>
+                                    <TableColumn fx:id="mDoubleStatusCol" text="Status" prefWidth="90"/>
+                                </columns>
+                            </TableView>
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Deluxe" styleClass="avail-label"/>
+                            <TableView fx:id="mDeluxeTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                                <columns>
+                                    <TableColumn fx:id="mDeluxeNumCol" text="No." prefWidth="60"/>
+                                    <TableColumn fx:id="mDeluxeStatusCol" text="Status" prefWidth="90"/>
+                                </columns>
+                            </TableView>
+                        </VBox>
+                    </HBox>
+                    <HBox alignment="CENTER_RIGHT">
+                        <Button text="🗑️ Delete Selected" onAction="#handleDeleteRoom" styleClass="btn-danger"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+        </VBox>
+    </Tab>
+
 </TabPane>

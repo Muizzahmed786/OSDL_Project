@@ -17,6 +17,7 @@ import utils.FileHandler;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -53,7 +54,7 @@ public class BookingController implements Initializable {
     @FXML private FlowPane  doubleGrid;
     @FXML private FlowPane  deluxeGrid;
 
-    // ── Tab 3 — Checkout ─────────────────────────────────────────────────────
+    // ── Tab 4: Checkout ──────────────────────────────────────────────────────
     @FXML private TextField                      checkoutSearchField;
     @FXML private TableView<Customer>            checkoutTable;
     @FXML private TableColumn<Customer, Number>  coIndexCol;
@@ -69,17 +70,25 @@ public class BookingController implements Initializable {
     @FXML private Label checkoutSummaryLabel;
     @FXML private Button checkoutBtn;
 
+    // ── Tab 5 — Manage Rooms ────────────────────────────────────────────────
+    @FXML private ComboBox<String> mRoomTypeCombo;
+    @FXML private TextField        mRoomNumberField;
+    
+    @FXML private TableView<Room>  mSingleTable;
+    @FXML private TableColumn<Room, Number> mSingleNumCol;
+    @FXML private TableColumn<Room, String> mSingleStatusCol;
+
+    @FXML private TableView<Room>  mDoubleTable;
+    @FXML private TableColumn<Room, Number> mDoubleNumCol;
+    @FXML private TableColumn<Room, String> mDoubleStatusCol;
+
+    @FXML private TableView<Room>  mDeluxeTable;
+    @FXML private TableColumn<Room, Number> mDeluxeNumCol;
+    @FXML private TableColumn<Room, String> mDeluxeStatusCol;
+
     // ── Data ─────────────────────────────────────────────────────────────────
     private ObservableList<Customer> data = FXCollections.observableArrayList();
-
-    // ── Room Inventory ────────────────────────────────────────────────────────
-    private static final int SINGLE_COUNT = 10;
-    private static final int DOUBLE_COUNT = 20;
-    private static final int DELUXE_COUNT = 8;
-
-    private Room[] singleRooms = new Room[SINGLE_COUNT];
-    private Room[] doubleRooms = new Room[DOUBLE_COUNT];
-    private Room[] deluxeRooms = new Room[DELUXE_COUNT];
+    private ObservableList<Room>     rooms = FXCollections.observableArrayList();
 
     // ── Initializable ─────────────────────────────────────────────────────────
     @Override
@@ -165,14 +174,24 @@ public class BookingController implements Initializable {
             }
         });
 
+        // ── Tab 5: Manage Rooms setup ───────────────────────────────────────
+        mRoomTypeCombo.getItems().addAll("Single", "Double", "Deluxe");
+        
+        setupRoomTable(mSingleTable, mSingleNumCol, mSingleStatusCol, "Single");
+        setupRoomTable(mDoubleTable, mDoubleNumCol, mDoubleStatusCol, "Double");
+        setupRoomTable(mDeluxeTable, mDeluxeNumCol, mDeluxeStatusCol, "Deluxe");
+
         // ── Load saved data & restore room states ────────────────────────────
         List<Customer> loaded = FileHandler.load();
         data.addAll(loaded);
         for (Customer c : loaded) {
-            Room[] rooms = getRoomArray(c.getRoomType());
-            if (rooms != null)
-                for (Room r : rooms)
-                    if (r.getRoomNumber() == c.getRoomNumber()) { r.book(); break; }
+            List<Room> rList = getRoomList(c.getRoomType());
+            for (Room r : rList) {
+                if (r.getRoomNumber() == c.getRoomNumber()) {
+                    r.book();
+                    break;
+                }
+            }
         }
 
         updateAvailLabel();
@@ -296,15 +315,15 @@ public class BookingController implements Initializable {
     }
 
     private void refreshRoomGrids() {
-        buildGrid(singleGrid, singleRooms);
-        buildGrid(doubleGrid, doubleRooms);
-        buildGrid(deluxeGrid, deluxeRooms);
+        buildGrid(singleGrid, getRoomList("Single"));
+        buildGrid(doubleGrid, getRoomList("Double"));
+        buildGrid(deluxeGrid, getRoomList("Deluxe"));
         updateCountLabels();
     }
 
-    private void buildGrid(FlowPane grid, Room[] rooms) {
+    private void buildGrid(FlowPane grid, List<Room> roomList) {
         grid.getChildren().clear();
-        for (Room r : rooms) {
+        for (Room r : roomList) {
             Label cell = new Label(r.getLabel());
             cell.getStyleClass().add("room-cell");
             cell.getStyleClass().add(r.isBooked() ? "room-cell-booked" : "room-cell-available");
@@ -313,56 +332,124 @@ public class BookingController implements Initializable {
     }
 
     private void updateCountLabels() {
-        singleCountLabel.setText(availableCount("Single") + " / " + SINGLE_COUNT + " available");
-        doubleCountLabel.setText(availableCount("Double") + " / " + DOUBLE_COUNT + " available");
-        deluxeCountLabel.setText(availableCount("Deluxe") + " / " + DELUXE_COUNT + " available");
+        singleCountLabel.setText(availableCount("Single") + " / " + totalCount("Single") + " available");
+        doubleCountLabel.setText(availableCount("Double") + " / " + totalCount("Double") + " available");
+        deluxeCountLabel.setText(availableCount("Deluxe") + " / " + totalCount("Deluxe") + " available");
     }
 
     // ── Room Helpers ──────────────────────────────────────────────────────────
 
     private void initRooms() {
-        for (int i = 0; i < SINGLE_COUNT; i++) singleRooms[i] = new Room("Single", i + 1);
-        for (int i = 0; i < DOUBLE_COUNT; i++) doubleRooms[i] = new Room("Double", i + 1);
-        for (int i = 0; i < DELUXE_COUNT; i++) deluxeRooms[i] = new Room("Deluxe", i + 1);
+        rooms.setAll(FileHandler.loadRooms());
     }
 
     private Room getAvailableRoom(String type) {
-        Room[] rooms = getRoomArray(type);
-        if (rooms == null) return null;
-        for (Room r : rooms) if (!r.isBooked()) return r;
+        List<Room> rList = getRoomList(type);
+        for (Room r : rList) if (!r.isBooked()) return r;
         return null;
     }
 
     private void freeRoom(String type, int number) {
-        Room[] rooms = getRoomArray(type);
-        if (rooms == null) return;
-        for (Room r : rooms) if (r.getRoomNumber() == number) { r.checkout(); return; }
+        List<Room> rList = getRoomList(type);
+        for (Room r : rList) if (r.getRoomNumber() == number) { r.checkout(); return; }
     }
 
-    private Room[] getRoomArray(String type) {
-        switch (type) {
-            case "Single": return singleRooms;
-            case "Double": return doubleRooms;
-            case "Deluxe": return deluxeRooms;
-            default:       return null;
-        }
+    private List<Room> getRoomList(String type) {
+        return rooms.filtered(r -> r.getRoomType().equals(type));
     }
 
     private int availableCount(String type) {
-        Room[] rooms = getRoomArray(type);
-        if (rooms == null) return 0;
-        int count = 0;
-        for (Room r : rooms) if (!r.isBooked()) count++;
-        return count;
+        return (int) rooms.stream()
+                .filter(r -> r.getRoomType().equals(type) && !r.isBooked())
+                .count();
+    }
+
+    private int totalCount(String type) {
+        return (int) rooms.stream()
+                .filter(r -> r.getRoomType().equals(type))
+                .count();
     }
 
     private void updateAvailLabel() {
         availLabel.setText(String.format(
             "Single: %d/%d   |   Double: %d/%d   |   Deluxe: %d/%d",
-            availableCount("Single"), SINGLE_COUNT,
-            availableCount("Double"), DOUBLE_COUNT,
-            availableCount("Deluxe"), DELUXE_COUNT
+            availableCount("Single"), totalCount("Single"),
+            availableCount("Double"), totalCount("Double"),
+            availableCount("Deluxe"), totalCount("Deluxe")
         ));
+    }
+
+    // ── Tab 5: Manage Rooms Actions ──────────────────────────────────────────
+
+    private void setupRoomTable(TableView<Room> table, TableColumn<Room, Number> numCol, 
+                                TableColumn<Room, String> statusCol, String type) {
+        numCol.setCellValueFactory(new PropertyValueFactory<>("roomNumber"));
+        statusCol.setCellValueFactory(cell -> 
+            new ReadOnlyObjectWrapper<>(cell.getValue().isBooked() ? "Occupied" : "Available"));
+        
+        table.setItems(rooms.filtered(r -> r.getRoomType().equals(type)));
+    }
+
+    @FXML
+    private void handleAddRoom() {
+        String type = mRoomTypeCombo.getValue();
+        String numStr = mRoomNumberField.getText().trim();
+
+        if (type == null || numStr.isEmpty()) {
+            showAlert("Please fill both Fields!"); return;
+        }
+
+        try {
+            int num = Integer.parseInt(numStr);
+            if (num <= 0) throw new NumberFormatException();
+            
+            // Check uniqueness within the same type
+            for (Room r : rooms) {
+                if (r.getRoomType().equals(type) && r.getRoomNumber() == num) {
+                    showAlert("Room " + type + "-" + num + " already exists!");
+                    return;
+                }
+            }
+
+            rooms.add(new Room(type, num));
+            FileHandler.saveRooms(new ArrayList<>(rooms));
+            mRoomNumberField.clear();
+            updateAvailLabel();
+            refreshRoomGrids();
+            showInfo("Room " + type + "-" + num + " added successfully.");
+
+        } catch (NumberFormatException e) {
+            showAlert("Please enter a valid positive room number!");
+        }
+    }
+
+    @FXML
+    private void handleDeleteRoom() {
+        Room selected = mSingleTable.getSelectionModel().getSelectedItem();
+        if (selected == null) selected = mDoubleTable.getSelectionModel().getSelectedItem();
+        if (selected == null) selected = mDeluxeTable.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            showAlert("Please select a room from any table to delete!"); return;
+        }
+
+        if (selected.isBooked()) {
+            showAlert("Cannot delete a booked room! Please checkout the guest first.");
+            return;
+        }
+
+        final Room toDelete = selected;
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, 
+            "Delete room " + toDelete.getLabel() + "?");
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                rooms.remove(toDelete);
+                FileHandler.saveRooms(new ArrayList<>(rooms));
+                updateAvailLabel();
+                refreshRoomGrids();
+                showInfo("Room deleted successfully.");
+            }
+        });
     }
 
     private double getRoomPrice(String room) {

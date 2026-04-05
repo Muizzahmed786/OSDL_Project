@@ -3,11 +3,13 @@ package utils;
 import java.io.*;
 import java.util.*;
 import model.Customer;
+import model.Room;
 
 public class FileHandler {
 
     private static final String FILE_PATH     = "data/bookings.txt";
     private static final String CHECKOUT_PATH = "data/checkouts.txt";
+    private static final String ROOM_PATH     = "data/rooms.txt";
 
     // ── Active Bookings ───────────────────────────────────────────────────────
 
@@ -63,6 +65,44 @@ public class FileHandler {
     /** Loads all past checkout records from checkouts.txt. */
     public static List<Customer> loadCheckouts() {
         return readFromFile(CHECKOUT_PATH);
+    }
+
+    // ── Rooms (persistence) ───────────────────────────────────────────────────
+
+    public static void saveRooms(List<Room> rooms) {
+        new File("data").mkdirs();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ROOM_PATH))) {
+            for (Room r : rooms) {
+                writer.write(r.getRoomType() + "," + r.getRoomNumber());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving rooms file: " + e.getMessage());
+        }
+    }
+
+    public static List<Room> loadRooms() {
+        List<Room> list = new ArrayList<>();
+        File file = new File(ROOM_PATH);
+        if (!file.exists()) return list;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2) {
+                    try {
+                        int num = Integer.parseInt(parts[1].trim());
+                        list.add(new Room(parts[0].trim(), num));
+                    } catch (NumberFormatException e) {
+                        System.err.println("Skipping malformed room line: " + line);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading rooms file: " + ROOM_PATH);
+        }
+        return list;
     }
 
     // ── Shared Helper ─────────────────────────────────────────────────────────
