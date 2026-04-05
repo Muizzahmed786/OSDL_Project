@@ -1,0 +1,451 @@
+/* ── Google Font Import ─────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@600&display=swap');
+
+/* ── Root / Base ────────────────────────────────────────────────────────── */
+.root {
+    -fx-background-color: #1a1f2e;
+    -fx-font-family: "DM Sans", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  APP HEADER                                                               */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.app-header {
+    -fx-background-color: #141824;
+    -fx-padding: 14 20;
+    -fx-border-color: transparent transparent #2a3048 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.header-icon {
+    -fx-font-size: 28px;
+}
+
+.header-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c9a96e;
+    -fx-font-family: "Playfair Display", serif;
+    -fx-letter-spacing: 3;
+}
+
+.header-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6b7280;
+    -fx-letter-spacing: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  TAB PANE                                                                 */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.main-tabs {
+    -fx-background-color: #1a1f2e;
+    -fx-tab-min-height: 42px;
+    -fx-tab-max-height: 42px;
+}
+
+.main-tabs .tab-header-area {
+    -fx-background-color: #141824;
+    -fx-padding: 0 16 0 16;
+}
+
+.main-tabs .tab-header-area .tab-header-background {
+    -fx-background-color: #141824;
+}
+
+.main-tabs .tab-header-area .headers-region {
+    -fx-background-color: transparent;
+}
+
+.main-tabs .tab {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.main-tabs .tab .tab-label {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.main-tabs .tab:selected {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #c9a96e transparent;
+    -fx-border-width: 0 0 2.5 0;
+}
+
+.main-tabs .tab:selected .tab-label {
+    -fx-text-fill: #c9a96e;
+}
+
+.main-tabs .tab:hover .tab-label {
+    -fx-text-fill: #e8e8e8;
+}
+
+.main-tabs > .tab-content-area {
+    -fx-background-color: #1a1f2e;
+    -fx-padding: 0;
+}
+
+/* ── Tab content wrapper ─────────────────────────────────────────────────── */
+.tab-content {
+    -fx-padding: 16 18 16 18;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  INPUT FIELDS                                                             */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.text-field {
+    -fx-background-color: #252b3b;
+    -fx-text-fill: #e8e8e8;
+    -fx-prompt-text-fill: #6b7280;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 9 12;
+    -fx-font-size: 13px;
+}
+
+.text-field:focused {
+    -fx-border-color: #c9a96e;
+    -fx-effect: dropshadow(gaussian, rgba(201, 169, 110, 0.25), 8, 0, 0, 0);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  COMBO BOX                                                                */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.combo-box {
+    -fx-background-color: #252b3b;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 4 8;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #e8e8e8;
+    -fx-background-color: transparent;
+    -fx-font-size: 13px;
+}
+
+.combo-box .arrow-button { -fx-background-color: transparent; }
+.combo-box .arrow        { -fx-background-color: #c9a96e; }
+
+.combo-box:focused { -fx-border-color: #c9a96e; }
+
+.combo-box-popup .list-view {
+    -fx-background-color: #252b3b;
+    -fx-border-color: #363d52;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #363d52;
+    -fx-text-fill: #c9a96e;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  BUTTONS                                                                  */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.button {
+    -fx-background-color: #c9a96e;
+    -fx-text-fill: #1a1f2e;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 9 18;
+    -fx-cursor: hand;
+    -fx-min-width: 130;
+    -fx-effect: dropshadow(gaussian, rgba(201, 169, 110, 0.3), 8, 0, 0, 2);
+}
+
+.button:hover {
+    -fx-background-color: #e0bf86;
+    -fx-effect: dropshadow(gaussian, rgba(201, 169, 110, 0.5), 14, 0, 0, 3);
+}
+
+.button:pressed {
+    -fx-background-color: #b8924f;
+    -fx-effect: none;
+}
+
+.primary-btn {
+    -fx-background-color: #c9a96e;
+    -fx-text-fill: #1a1f2e;
+    -fx-min-width: 140;
+}
+
+/* Confirm Checkout Button (green accent) */
+.confirm-checkout-btn {
+    -fx-background-color: #2e7d52;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 10 22;
+    -fx-cursor: hand;
+    -fx-min-width: 180;
+    -fx-effect: dropshadow(gaussian, rgba(46, 125, 82, 0.35), 8, 0, 0, 2);
+}
+
+.confirm-checkout-btn:hover {
+    -fx-background-color: #38a169;
+    -fx-effect: dropshadow(gaussian, rgba(56, 161, 105, 0.5), 12, 0, 0, 3);
+}
+
+.confirm-checkout-btn:pressed {
+    -fx-background-color: #276042;
+    -fx-effect: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  LABELS                                                                   */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.bill-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c9a96e;
+    -fx-background-color: #252b3b;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 14;
+}
+
+.avail-pill {
+    -fx-font-size: 12px;
+    -fx-text-fill: #9ca3af;
+    -fx-background-color: #252b3b;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 6 14;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  SEARCH FIELD                                                             */
+/* ══════════════════════════════════════════════════════════════════════════ */
+#searchField {
+    -fx-background-color: #252b3b;
+    -fx-text-fill: #e8e8e8;
+    -fx-prompt-text-fill: #6b7280;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 9 14;
+    -fx-font-size: 13px;
+}
+
+#searchField:focused {
+    -fx-border-color: #c9a96e;
+    -fx-effect: dropshadow(gaussian, rgba(201, 169, 110, 0.2), 8, 0, 0, 0);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  TABLE VIEW                                                               */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.table-view {
+    -fx-background-color: #1e2435;
+    -fx-border-color: #363d52;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #252b3b;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-size: 40;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #c9a96e;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 10;
+}
+
+.table-view .filler { -fx-background-color: #252b3b; }
+
+.table-row-cell {
+    -fx-background-color: #1e2435;
+    -fx-border-color: transparent;
+    -fx-cell-size: 38;
+}
+
+.table-row-cell:odd  { -fx-background-color: #232940; }
+
+.table-row-cell .table-cell {
+    -fx-text-fill: #d4d8e8;
+    -fx-padding: 0 10;
+    -fx-font-size: 13px;
+}
+
+.table-row-cell:hover    { -fx-background-color: #2e3650; }
+.table-row-cell:selected { -fx-background-color: #3a4060; }
+.table-row-cell:selected .table-cell { -fx-text-fill: #c9a96e; }
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  SCROLLBAR                                                                */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.scroll-bar { -fx-background-color: #1e2435; }
+
+.scroll-bar .thumb {
+    -fx-background-color: #363d52;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover { -fx-background-color: #c9a96e; }
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-height: 0;
+    -fx-pref-width: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  ROOMS TAB — SUMMARY CARDS                                                */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.room-card {
+    -fx-background-color: #252b3b;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 18 14;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 3);
+}
+
+.room-card-type {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 2;
+}
+
+.room-card-count {
+    -fx-text-fill: #e8e8e8;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.room-card-price {
+    -fx-text-fill: #c9a96e;
+    -fx-font-size: 12px;
+}
+
+/* ── Legend ──────────────────────────────────────────────────────────────── */
+.legend-dot-available {
+    -fx-background-color: #2e7d52;
+    -fx-background-radius: 50;
+    -fx-min-width: 12;
+    -fx-min-height: 12;
+    -fx-max-width: 12;
+    -fx-max-height: 12;
+}
+
+.legend-dot-booked {
+    -fx-background-color: #b71c1c;
+    -fx-background-radius: 50;
+    -fx-min-width: 12;
+    -fx-min-height: 12;
+    -fx-max-width: 12;
+    -fx-max-height: 12;
+}
+
+.legend-text {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 12px;
+}
+
+/* ── Grid section titles ─────────────────────────────────────────────────── */
+.grid-section-title {
+    -fx-text-fill: #c9a96e;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 0 2;
+}
+
+/* ── Room grid scroll pane ───────────────────────────────────────────────── */
+.room-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background: #1a1f2e;
+}
+
+.room-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ── Room cells ──────────────────────────────────────────────────────────── */
+.room-cell {
+    -fx-font-size: 11.5px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 12;
+    -fx-background-radius: 7;
+    -fx-border-radius: 7;
+    -fx-border-width: 1;
+    -fx-min-width: 82;
+    -fx-alignment: CENTER;
+    -fx-cursor: default;
+}
+
+.room-cell-available {
+    -fx-background-color: #1a3d2e;
+    -fx-border-color: #2e7d52;
+    -fx-text-fill: #4ade80;
+}
+
+.room-cell-booked {
+    -fx-background-color: #3d1a1a;
+    -fx-border-color: #b71c1c;
+    -fx-text-fill: #f87171;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  CHECKOUT TAB                                                             */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.checkout-heading {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 13px;
+    -fx-padding: 0 0 4 0;
+}
+
+.checkout-summary {
+    -fx-background-color: #252b3b;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 14 18;
+}
+
+.checkout-summary-active {
+    -fx-border-color: #2e7d52;
+    -fx-background-color: #1a3d2e;
+}
+
+.checkout-summary-text {
+    -fx-text-fill: #c9a96e;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}

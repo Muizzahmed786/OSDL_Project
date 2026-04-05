@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<TabPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.BookingController"
+         stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE">
+
+    <!-- ══════════════════════════════════════════════════════ TAB 1: BOOKINGS -->
+    <Tab text="📋 Bookings">
+        <VBox spacing="16" styleClass="tab-content">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+            <Label text="Hotel Management System" styleClass="title-label"/>
+
+            <!-- Availability Summary -->
+            <Label fx:id="availLabel" text="Single: 10/10   |   Double: 20/20   |   Deluxe: 8/8"
+                   styleClass="avail-label"/>
+
+            <!-- Booking Form -->
+            <VBox styleClass="card" spacing="12">
+                <Label text="New Booking" styleClass="card-title"/>
+
+                <GridPane hgap="16" vgap="10">
+                    <Label text="Customer Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+                    <TextField fx:id="nameField" promptText="Full name"
+                               GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="form-input"/>
+
+                    <Label text="Contact (10 digits):" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+                    <TextField fx:id="contactField" promptText="e.g. 9876543210"
+                               GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="form-input"/>
+
+                    <Label text="Room Type:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+                    <ComboBox fx:id="roomType" promptText="Select room type"
+                              GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="form-input" maxWidth="Infinity"/>
+
+                    <Label text="Number of Days:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+                    <TextField fx:id="daysField" promptText="e.g. 3"
+                               GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="form-input"/>
+
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="150"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+                </GridPane>
+
+                <Label fx:id="billLabel" text="Select a booking or add one to see the bill."
+                       styleClass="bill-label" wrapText="true"/>
+
+                <HBox spacing="10">
+                    <Button text="✅ Book Room" onAction="#handleAddBooking" styleClass="btn-primary"/>
+                </HBox>
+            </VBox>
+
+            <!-- Search -->
+            <VBox styleClass="card" spacing="10">
+                <Label text="Search Bookings" styleClass="card-title"/>
+                <TextField fx:id="searchField" promptText="Search by name, contact, or room..." styleClass="form-input"/>
+            </VBox>
+
+            <!-- Bookings Table -->
+            <TableView fx:id="table" VBox.vgrow="ALWAYS" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="indexCol"   text="#"        prefWidth="40"/>
+                    <TableColumn fx:id="nameCol"    text="Name"     prefWidth="130"/>
+                    <TableColumn fx:id="contactCol" text="Contact"  prefWidth="110"/>
+                    <TableColumn fx:id="roomCol"    text="Room"     prefWidth="100"/>
+                    <TableColumn fx:id="daysCol"    text="Days"     prefWidth="60"/>
+                    <TableColumn fx:id="billCol"    text="Bill (₹)" prefWidth="90"/>
+                    <TableColumn fx:id="statusCol"  text="Status"   prefWidth="80"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </Tab>
+
+    <!-- ═══════════════════════════════════════════════════════ TAB 2: ROOMS -->
+    <Tab text="🏨 Rooms" onSelectionChanged="#handleRoomsTabSelected">
+        <VBox spacing="16" styleClass="tab-content">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Room Availability" styleClass="title-label"/>
+
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <Label text="🟢 Available" styleClass="legend-available"/>
+                <Label text="🔴 Booked"    styleClass="legend-booked"/>
+            </HBox>
+
+            <!-- Single Rooms -->
+            <VBox styleClass="card" spacing="8">
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Single Rooms — ₹1000/night" styleClass="card-title"/>
+                    <Label fx:id="singleCountLabel" text="10 / 10 available" styleClass="avail-label"/>
+                </HBox>
+                <FlowPane fx:id="singleGrid" hgap="8" vgap="8" prefWrapLength="600">
+                    <padding><Insets top="6" right="6" bottom="6" left="6"/></padding>
+                </FlowPane>
+            </VBox>
+
+            <!-- Double Rooms -->
+            <VBox styleClass="card" spacing="8">
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Double Rooms — ₹2000/night" styleClass="card-title"/>
+                    <Label fx:id="doubleCountLabel" text="20 / 20 available" styleClass="avail-label"/>
+                </HBox>
+                <FlowPane fx:id="doubleGrid" hgap="8" vgap="8" prefWrapLength="600">
+                    <padding><Insets top="6" right="6" bottom="6" left="6"/></padding>
+                </FlowPane>
+            </VBox>
+
+            <!-- Deluxe Rooms -->
+            <VBox styleClass="card" spacing="8">
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label text="Deluxe Rooms — ₹3000/night" styleClass="card-title"/>
+                    <Label fx:id="deluxeCountLabel" text="8 / 8 available" styleClass="avail-label"/>
+                </HBox>
+                <FlowPane fx:id="deluxeGrid" hgap="8" vgap="8" prefWrapLength="600">
+                    <padding><Insets top="6" right="6" bottom="6" left="6"/></padding>
+                </FlowPane>
+            </VBox>
+        </VBox>
+    </Tab>
+
+    <!-- ══════════════════════════════════════════════════════ TAB 3: CHECKOUT -->
+    <Tab text="💳 Checkout">
+        <VBox spacing="16" styleClass="tab-content">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Customer Checkout" styleClass="title-label"/>
+
+            <!-- Search -->
+            <VBox styleClass="card" spacing="10">
+                <Label text="Find Booking" styleClass="card-title"/>
+                <TextField fx:id="checkoutSearchField" promptText="Search by name, contact, or room..."
+                           styleClass="form-input"/>
+            </VBox>
+
+            <!-- Active Bookings Table -->
+            <TableView fx:id="checkoutTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="coIndexCol"   text="#"        prefWidth="40"/>
+                    <TableColumn fx:id="coNameCol"    text="Name"     prefWidth="130"/>
+                    <TableColumn fx:id="coContactCol" text="Contact"  prefWidth="110"/>
+                    <TableColumn fx:id="coRoomCol"    text="Room"     prefWidth="100"/>
+                    <TableColumn fx:id="coDaysCol"    text="Days"     prefWidth="60"/>
+                    <TableColumn fx:id="coBillCol"    text="Bill (₹)" prefWidth="90"/>
+                </columns>
+            </TableView>
+
+            <!-- Summary Card -->
+            <VBox fx:id="checkoutSummaryBox" styleClass="checkout-summary" spacing="6">
+                <padding><Insets top="12" right="16" bottom="12" left="16"/></padding>
+                <Label fx:id="checkoutSummaryLabel"
+                       text="← Select a row above to preview checkout details."
+                       styleClass="checkout-summary-text" wrapText="true"/>
+            </VBox>
+
+            <Button fx:id="checkoutBtn" text="✅ Confirm Checkout" onAction="#handleCheckout"
+                    styleClass="btn-success"/>
+        </VBox>
+    </Tab>
+
+</TabPane>
