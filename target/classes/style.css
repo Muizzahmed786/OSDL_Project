@@ -209,6 +209,13 @@
 /* ══════════════════════════════════════════════════════════════════════════ */
 /*  LABELS                                                                   */
 /* ══════════════════════════════════════════════════════════════════════════ */
+.title-label   { -fx-text-fill: #c9a96e; }
+.card-title    { -fx-text-fill: #e8e8e8; }
+.form-label    { -fx-text-fill: #c9d1e8; }
+.avail-label   { -fx-text-fill: #9ca3af; }
+.legend-available { -fx-text-fill: #4ade80; }
+.legend-booked    { -fx-text-fill: #f87171; }
+
 .bill-label {
     -fx-font-size: 13px;
     -fx-font-weight: bold;

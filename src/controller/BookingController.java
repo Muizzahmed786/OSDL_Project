@@ -237,6 +237,7 @@ public class BookingController implements Initializable {
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 freeRoom(toCheckout.getRoomType(), toCheckout.getRoomNumber());
+                FileHandler.saveCheckout(toCheckout);   // persist to checkouts.txt
                 data.remove(toCheckout);
                 FileHandler.save(data);
                 updateAvailLabel();

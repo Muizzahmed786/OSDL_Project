@@ -7,8 +7,8 @@
 <TabPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.BookingController"
          stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE">
 
-    <!-- ══════════════════════════════════════════════════════ TAB 1: BOOKINGS -->
-    <Tab text="📋 Bookings">
+    <!-- ══════════════════════════════════════════════════════ TAB 1: BOOK A ROOM -->
+    <Tab text="📋 Book a Room">
         <VBox spacing="16" styleClass="tab-content">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
 
@@ -45,13 +45,22 @@
                     </columnConstraints>
                 </GridPane>
 
-                <Label fx:id="billLabel" text="Select a booking or add one to see the bill."
+                <Label fx:id="billLabel" text="Fill in the form and click Book Room."
                        styleClass="bill-label" wrapText="true"/>
 
                 <HBox spacing="10">
                     <Button text="✅ Book Room" onAction="#handleAddBooking" styleClass="btn-primary"/>
                 </HBox>
             </VBox>
+        </VBox>
+    </Tab>
+
+    <!-- ══════════════════════════════════════════════════════ TAB 2: ALL BOOKINGS -->
+    <Tab text="📊 All Bookings">
+        <VBox spacing="16" styleClass="tab-content">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+            <Label text="All Bookings" styleClass="title-label"/>
 
             <!-- Search -->
             <VBox styleClass="card" spacing="10">
@@ -74,7 +83,7 @@
         </VBox>
     </Tab>
 
-    <!-- ═══════════════════════════════════════════════════════ TAB 2: ROOMS -->
+    <!-- ═══════════════════════════════════════════════════════ TAB 3: ROOMS -->
     <Tab text="🏨 Rooms" onSelectionChanged="#handleRoomsTabSelected">
         <VBox spacing="16" styleClass="tab-content">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
@@ -120,7 +129,7 @@
         </VBox>
     </Tab>
 
-    <!-- ══════════════════════════════════════════════════════ TAB 3: CHECKOUT -->
+    <!-- ══════════════════════════════════════════════════════ TAB 4: CHECKOUT -->
     <Tab text="💳 Checkout">
         <VBox spacing="16" styleClass="tab-content">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
