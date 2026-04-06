@@ -22,6 +22,7 @@ public class FileHandler {
                     c.getRoomType()    + "," +
                     c.getRoomNumber()  + "," +
                     c.getStatus()      + "," +
+                    c.getGuests()      + "," +
                     c.getDays()        + "," +
                     c.getCheckInDate() + "," +
                     c.getCheckOutDate() + "," +
@@ -51,6 +52,7 @@ public class FileHandler {
                 c.getRoomType()    + "," +
                 c.getRoomNumber()  + "," +
                 "Checked Out"      + "," +
+                c.getGuests()      + "," +
                 c.getDays()        + "," +
                 c.getCheckInDate() + "," +
                 c.getCheckOutDate() + "," +
@@ -116,16 +118,22 @@ public class FileHandler {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 9) {
+                if (parts.length >= 9) {
                     try {
                         int roomNumber = Integer.parseInt(parts[3].trim());
-                        int days       = Integer.parseInt(parts[5].trim());
-                        String checkIn  = parts[6].trim();
-                        String checkOut = parts[7].trim();
-                        double bill    = Double.parseDouble(parts[8].trim());
+                        int guests = 1;
+                        int daysIdx = 5;
+                        if (parts.length >= 10) {
+                            guests = Integer.parseInt(parts[5].trim());
+                            daysIdx = 6;
+                        }
+                        int days       = Integer.parseInt(parts[daysIdx].trim());
+                        String checkIn  = parts[daysIdx + 1].trim();
+                        String checkOut = parts[daysIdx + 2].trim();
+                        double bill    = Double.parseDouble(parts[daysIdx + 3].trim());
                         list.add(new Customer(
                             parts[0], parts[1], parts[2],
-                            roomNumber, parts[4], days, checkIn, checkOut, bill
+                            roomNumber, parts[4], guests, days, checkIn, checkOut, bill
                         ));
                     } catch (NumberFormatException e) {
                         System.err.println("Skipping malformed line: " + line);

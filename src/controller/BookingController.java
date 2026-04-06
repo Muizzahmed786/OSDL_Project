@@ -30,6 +30,7 @@ public class BookingController implements Initializable {
     @FXML private DatePicker       checkOutPicker;
     @FXML private TextField        searchField;
     @FXML private ComboBox<String> roomType;
+    @FXML private TextField        guestsField;
 
     @FXML private Label billLabel;
     @FXML private Label availLabel;
@@ -39,6 +40,7 @@ public class BookingController implements Initializable {
     @FXML private TableColumn<Customer, String>  nameCol;
     @FXML private TableColumn<Customer, String>  contactCol;
     @FXML private TableColumn<Customer, String>  roomCol;
+    @FXML private TableColumn<Customer, Integer> guestsCol;
     @FXML private TableColumn<Customer, String>  checkInCol;
     @FXML private TableColumn<Customer, String>  checkOutCol;
     @FXML private TableColumn<Customer, Integer> daysCol;
@@ -61,6 +63,7 @@ public class BookingController implements Initializable {
     @FXML private TableColumn<Customer, String>  coNameCol;
     @FXML private TableColumn<Customer, String>  coContactCol;
     @FXML private TableColumn<Customer, String>  coRoomCol;
+    @FXML private TableColumn<Customer, Integer> coGuestsCol;
     @FXML private TableColumn<Customer, String>  coCheckInCol;
     @FXML private TableColumn<Customer, String>  coCheckOutCol;
     @FXML private TableColumn<Customer, Integer> coDaysCol;
@@ -105,6 +108,7 @@ public class BookingController implements Initializable {
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         contactCol.setCellValueFactory(new PropertyValueFactory<>("contact"));
         roomCol.setCellValueFactory(new PropertyValueFactory<>("roomLabel"));
+        guestsCol.setCellValueFactory(new PropertyValueFactory<>("guests"));
         checkInCol.setCellValueFactory(new PropertyValueFactory<>("checkInDate"));
         checkOutCol.setCellValueFactory(new PropertyValueFactory<>("checkOutDate"));
         daysCol.setCellValueFactory(new PropertyValueFactory<>("days"));
@@ -127,8 +131,8 @@ public class BookingController implements Initializable {
         table.getSelectionModel().selectedItemProperty().addListener((obs, o, newSel) -> {
             if (newSel != null) {
                 billLabel.setText(String.format(
-                    "Selected: %s  |  Room: %s  |  Days: %d  |  Total Bill: ₹ %.2f",
-                    newSel.getName(), newSel.getRoomLabel(), newSel.getDays(), newSel.getTotalBill()
+                    "Selected: %s  |  Room: %s  |  Guests: %d  |  Days: %d  |  Total Bill: ₹ %.2f",
+                    newSel.getName(), newSel.getRoomLabel(), newSel.getGuests(), newSel.getDays(), newSel.getTotalBill()
                 ));
             } else {
                 billLabel.setText("Select a booking or add one to see the bill.");
@@ -141,6 +145,7 @@ public class BookingController implements Initializable {
         coNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         coContactCol.setCellValueFactory(new PropertyValueFactory<>("contact"));
         coRoomCol.setCellValueFactory(new PropertyValueFactory<>("roomLabel"));
+        coGuestsCol.setCellValueFactory(new PropertyValueFactory<>("guests"));
         coCheckInCol.setCellValueFactory(new PropertyValueFactory<>("checkInDate"));
         coCheckOutCol.setCellValueFactory(new PropertyValueFactory<>("checkOutDate"));
         coDaysCol.setCellValueFactory(new PropertyValueFactory<>("days"));
@@ -162,9 +167,9 @@ public class BookingController implements Initializable {
         checkoutTable.getSelectionModel().selectedItemProperty().addListener((obs, o, sel) -> {
             if (sel != null) {
                 checkoutSummaryLabel.setText(String.format(
-                    "Guest: %s     Contact: %s\nRoom: %s     Stay: %d day(s)\nTotal Bill: ₹ %.2f",
+                    "Guest: %s     Contact: %s\nRoom: %s     Guests: %d     Stay: %d day(s)\nTotal Bill: ₹ %.2f",
                     sel.getName(), sel.getContact(),
-                    sel.getRoomLabel(), sel.getDays(), sel.getTotalBill()
+                    sel.getRoomLabel(), sel.getGuests(), sel.getDays(), sel.getTotalBill()
                 ));
                 checkoutSummaryBox.getStyleClass().removeAll("checkout-summary-active");
                 checkoutSummaryBox.getStyleClass().add("checkout-summary-active");
@@ -227,11 +232,32 @@ public class BookingController implements Initializable {
         String name     = nameField.getText().trim();
         String contact  = contactField.getText().trim();
         String room     = roomType.getValue();
+        String guestsStr = guestsField.getText().trim();
         LocalDate checkIn  = checkInPicker.getValue();
         LocalDate checkOut = checkOutPicker.getValue();
 
-        if (name.isEmpty() || contact.isEmpty() || room == null || checkIn == null || checkOut == null) {
+        if (name.isEmpty() || contact.isEmpty() || room == null || guestsStr.isEmpty() || checkIn == null || checkOut == null) {
             showAlert("Please fill all fields!"); return;
+        }
+
+        int guests;
+        try {
+            guests = Integer.parseInt(guestsStr);
+        } catch (NumberFormatException e) {
+            showAlert("Number of guests must be a valid number!"); return;
+        }
+
+        if (guests <= 0) {
+            showAlert("Number of guests must be at least 1!"); return;
+        }
+        if ("Single".equals(room) && guests > 1) {
+            showAlert("Single room can accommodate at most 1 guest."); return;
+        }
+        if ("Double".equals(room) && guests > 2) {
+            showAlert("Double room can accommodate at most 2 guests."); return;
+        }
+        if ("Deluxe".equals(room) && guests > 4) {
+            showAlert("Deluxe room can accommodate at most 4 guests."); return;
         }
         if (!contact.matches("\\d{10}")) {
             showAlert("Contact must be a valid 10-digit number!"); return;
@@ -254,7 +280,7 @@ public class BookingController implements Initializable {
 
         double total = getRoomPrice(room) * days;
         available.book();
-        Customer c = new Customer(name, contact, room, available.getRoomNumber(), "Booked", days, 
+        Customer c = new Customer(name, contact, room, available.getRoomNumber(), "Booked", guests, days, 
                                  checkIn.toString(), checkOut.toString(), total);
         data.add(c);
         FileHandler.save(data);
@@ -262,11 +288,11 @@ public class BookingController implements Initializable {
         refreshRoomGrids();
 
         billLabel.setText(String.format(
-            "New Booking: %s  |  Room: %s  |  Days: %d  |  Total Bill: ₹ %.2f",
-            name, available.getLabel(), days, total
+            "New Booking: %s  |  Room: %s  |  Guests: %d  |  Days: %d  |  Total Bill: ₹ %.2f",
+            name, available.getLabel(), guests, days, total
         ));
 
-        nameField.clear(); contactField.clear();
+        nameField.clear(); contactField.clear(); guestsField.clear();
         roomType.setValue(null);
         checkInPicker.setValue(LocalDate.now());
         checkOutPicker.setValue(LocalDate.now().plusDays(1));
