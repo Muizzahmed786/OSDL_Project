@@ -82,8 +82,8 @@
                     <TableColumn fx:id="contactCol" text="Contact"  prefWidth="110"/>
                     <TableColumn fx:id="roomCol"    text="Room"     prefWidth="100"/>
                     <TableColumn fx:id="guestsCol"  text="Guests"   prefWidth="60"/>
-                    <TableColumn fx:id="checkInCol" text="Check-in"  prefWidth="100"/>
-                    <TableColumn fx:id="checkOutCol" text="Check-out" prefWidth="100"/>
+                    <TableColumn fx:id="checkInCol" text="Check-in"  prefWidth="120"/>
+                    <TableColumn fx:id="checkOutCol" text="Check-out" prefWidth="120"/>
                     <TableColumn fx:id="daysCol"    text="Days"     prefWidth="60"/>
                     <TableColumn fx:id="billCol"    text="Bill (₹)" prefWidth="90"/>
                     <TableColumn fx:id="statusCol"  text="Status"   prefWidth="80"/>
@@ -159,8 +159,8 @@
                     <TableColumn fx:id="coContactCol" text="Contact"  prefWidth="110"/>
                     <TableColumn fx:id="coRoomCol"    text="Room"     prefWidth="100"/>
                     <TableColumn fx:id="coGuestsCol"  text="Guests"   prefWidth="60"/>
-                    <TableColumn fx:id="coCheckInCol" text="Check-in"  prefWidth="100"/>
-                    <TableColumn fx:id="coCheckOutCol" text="Check-out" prefWidth="100"/>
+                    <TableColumn fx:id="coCheckInCol" text="Check-in"  prefWidth="120"/>
+                    <TableColumn fx:id="coCheckOutCol" text="Check-out" prefWidth="120"/>
                     <TableColumn fx:id="coDaysCol"    text="Days"     prefWidth="60"/>
                     <TableColumn fx:id="coBillCol"    text="Bill (₹)" prefWidth="90"/>
                 </columns>
