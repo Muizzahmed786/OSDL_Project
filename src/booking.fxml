@@ -179,7 +179,80 @@
         </VBox>
     </Tab>
 
-    <!-- ══════════════════════════════════════════════════════ TAB 5: MANAGE ROOMS -->
+    <!-- ══════════════════════════════════════════════════════ TAB 5: ROOM SERVICE -->
+    <Tab text="🍽️ Room Service" onSelectionChanged="#handleRoomServiceTabSelected">
+        <VBox spacing="16" styleClass="tab-content">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Label text="Room Service" styleClass="title-label"/>
+
+            <HBox spacing="16">
+                <!-- Place Order Form -->
+                <VBox styleClass="card" spacing="12" prefWidth="320">
+                    <Label text="Place Order" styleClass="card-title"/>
+
+                    <GridPane hgap="14" vgap="10">
+                        <Label text="Room:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+                        <ComboBox fx:id="rsRoomCombo" promptText="Select booked room"
+                                  GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="form-input" maxWidth="Infinity"/>
+
+                        <Label text="Item:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+                        <ComboBox fx:id="rsItemCombo" promptText="Select item"
+                                  GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="form-input" maxWidth="Infinity"/>
+
+                        <Label text="Quantity:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+                        <TextField fx:id="rsQuantityField" promptText="e.g. 2"
+                                   GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="form-input"/>
+
+                        <columnConstraints>
+                            <ColumnConstraints minWidth="80"/>
+                            <ColumnConstraints hgrow="ALWAYS"/>
+                        </columnConstraints>
+                    </GridPane>
+
+                    <Label fx:id="rsPriceLabel" text="Select item and quantity to see price."
+                           styleClass="rs-price-preview" wrapText="true"/>
+
+                    <Button text="✅ Place Order" onAction="#handlePlaceRoomServiceOrder"
+                            styleClass="btn-primary" maxWidth="Infinity"/>
+
+                    <!-- Menu Card -->
+                    <VBox styleClass="rs-menu-card" spacing="4">
+                        <Label text="Menu Prices" styleClass="card-title"/>
+                        <Label text="☕ Tea — ₹50" styleClass="rs-menu-item"/>
+                        <Label text="☕ Coffee — ₹80" styleClass="rs-menu-item"/>
+                        <Label text="🥤 Juice — ₹100" styleClass="rs-menu-item"/>
+                        <Label text="🍿 Snacks — ₹150" styleClass="rs-menu-item"/>
+                        <Label text="🍽️ Meal — ₹300" styleClass="rs-menu-item"/>
+                        <Label text="💧 Bottled Water — ₹30" styleClass="rs-menu-item"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Order History -->
+                <VBox styleClass="card" spacing="10" HBox.hgrow="ALWAYS">
+                    <Label text="Order History" styleClass="card-title"/>
+
+                    <TextField fx:id="rsSearchField" promptText="Search by room or item..."
+                               styleClass="form-input"/>
+
+                    <TableView fx:id="rsTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+                        <columns>
+                            <TableColumn fx:id="rsIndexCol"  text="#"      prefWidth="40"/>
+                            <TableColumn fx:id="rsRoomCol"   text="Room"   prefWidth="90"/>
+                            <TableColumn fx:id="rsItemCol"   text="Item"   prefWidth="110"/>
+                            <TableColumn fx:id="rsQtyCol"    text="Qty"    prefWidth="50"/>
+                            <TableColumn fx:id="rsPriceCol"  text="Price (₹)" prefWidth="90"/>
+                            <TableColumn fx:id="rsTimeCol"   text="Time"   prefWidth="160"/>
+                        </columns>
+                    </TableView>
+
+                    <Label fx:id="rsTotalLabel" text="Select a room to view total charges."
+                           styleClass="bill-label" wrapText="true"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </Tab>
+
+    <!-- ══════════════════════════════════════════════════════ TAB 6: MANAGE ROOMS -->
     <Tab text="🛠️ Manage Rooms">
         <VBox spacing="16" styleClass="tab-content">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>

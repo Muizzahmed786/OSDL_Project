@@ -4,12 +4,14 @@ import java.io.*;
 import java.util.*;
 import model.Customer;
 import model.Room;
+import model.RoomServiceOrder;
 
 public class FileHandler {
 
-    private static final String FILE_PATH     = "data/bookings.txt";
-    private static final String CHECKOUT_PATH = "data/checkouts.txt";
-    private static final String ROOM_PATH     = "data/rooms.txt";
+    private static final String FILE_PATH        = "data/bookings.txt";
+    private static final String CHECKOUT_PATH    = "data/checkouts.txt";
+    private static final String ROOM_PATH        = "data/rooms.txt";
+    private static final String ROOMSERVICE_PATH = "data/roomservice.txt";
 
     // ── Active Bookings ───────────────────────────────────────────────────────
 
@@ -145,4 +147,67 @@ public class FileHandler {
         }
         return list;
     }
-}
+
+    // ── Room Service ─────────────────────────────────────────────────────────
+
+    /** Appends a single room-service order to roomservice.txt. */
+    public static void saveRoomServiceOrder(RoomServiceOrder order) {
+        new File("data").mkdirs();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ROOMSERVICE_PATH, true))) {
+            writer.write(
+                order.getRoomType()   + "," +
+                order.getRoomNumber() + "," +
+                order.getItem()       + "," +
+                order.getQuantity()   + "," +
+                order.getUnitPrice()  + "," +
+                order.getTotalPrice() + "," +
+                order.getTimestamp()
+            );
+            writer.newLine();
+        } catch (IOException e) {
+            System.err.println("Error saving room service order: " + e.getMessage());
+        }
+    }
+
+    /** Loads all room-service orders from roomservice.txt. */
+    public static List<RoomServiceOrder> loadRoomServiceOrders() {
+        List<RoomServiceOrder> list = new ArrayList<>();
+        File file = new File(ROOMSERVICE_PATH);
+        if (!file.exists()) return list;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 7) {
+                    try {
+                        int roomNum    = Integer.parseInt(parts[1].trim());
+                        int qty        = Integer.parseInt(parts[3].trim());
+                        double uPrice  = Double.parseDouble(parts[4].trim());
+                        double tPrice  = Double.parseDouble(parts[5].trim());
+                        list.add(new RoomServiceOrder(
+                            parts[0].trim(), roomNum, parts[2].trim(),
+                            qty, uPrice, tPrice, parts[6].trim()
+                        ));
+                    } catch (NumberFormatException e) {
+                        System.err.println("Skipping malformed room-service line: " + line);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading room service file: " + ROOMSERVICE_PATH);
+        }
+        return list;
+    }
+
+    /** Returns total room-service charges for a specific room. */
+    public static double getRoomServiceCharges(String roomType, int roomNumber) {
+        double total = 0;
+        for (RoomServiceOrder o : loadRoomServiceOrders()) {
+            if (o.getRoomType().equals(roomType) && o.getRoomNumber() == roomNumber) {
+                total += o.getTotalPrice();
+            }
+        }
+        return total;
+    }
+}

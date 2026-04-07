@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 
 import model.Customer;
 import model.Room;
+import model.RoomServiceOrder;
 import utils.FileHandler;
 
 import javafx.application.Platform;
@@ -19,10 +20,10 @@ import javafx.concurrent.Task;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class BookingController implements Initializable {
 
@@ -76,7 +77,23 @@ public class BookingController implements Initializable {
     @FXML private Label checkoutSummaryLabel;
     @FXML private Button checkoutBtn;
 
-    // ── Tab 5 — Manage Rooms ────────────────────────────────────────────────
+    // ── Tab 5 — Room Service ────────────────────────────────────────────────
+    @FXML private ComboBox<String> rsRoomCombo;
+    @FXML private ComboBox<String> rsItemCombo;
+    @FXML private TextField        rsQuantityField;
+    @FXML private Label            rsPriceLabel;
+    @FXML private TextField        rsSearchField;
+    @FXML private Label            rsTotalLabel;
+
+    @FXML private TableView<RoomServiceOrder>            rsTable;
+    @FXML private TableColumn<RoomServiceOrder, Number>  rsIndexCol;
+    @FXML private TableColumn<RoomServiceOrder, String>  rsRoomCol;
+    @FXML private TableColumn<RoomServiceOrder, String>  rsItemCol;
+    @FXML private TableColumn<RoomServiceOrder, Integer> rsQtyCol;
+    @FXML private TableColumn<RoomServiceOrder, Double>  rsPriceCol;
+    @FXML private TableColumn<RoomServiceOrder, String>  rsTimeCol;
+
+    // ── Tab 6 — Manage Rooms ────────────────────────────────────────────────
     @FXML private ComboBox<String> mRoomTypeCombo;
     @FXML private TextField        mRoomNumberField;
     
@@ -93,8 +110,20 @@ public class BookingController implements Initializable {
     @FXML private TableColumn<Room, String> mDeluxeStatusCol;
 
     // ── Data ─────────────────────────────────────────────────────────────────
-    private ObservableList<Customer> data = FXCollections.observableArrayList();
-    private ObservableList<Room>     rooms = FXCollections.observableArrayList();
+    private ObservableList<Customer>         data     = FXCollections.observableArrayList();
+    private ObservableList<Room>             rooms    = FXCollections.observableArrayList();
+    private ObservableList<RoomServiceOrder> rsData   = FXCollections.observableArrayList();
+
+    // ── Room Service Menu Prices ─────────────────────────────────────────────
+    private static final Map<String, Double> MENU = new LinkedHashMap<>();
+    static {
+        MENU.put("Tea",            50.0);
+        MENU.put("Coffee",         80.0);
+        MENU.put("Juice",         100.0);
+        MENU.put("Snacks",        150.0);
+        MENU.put("Meal",          300.0);
+        MENU.put("Bottled Water",  30.0);
+    }
 
     // ── Initializable ─────────────────────────────────────────────────────────
     @Override
@@ -169,10 +198,15 @@ public class BookingController implements Initializable {
 
         checkoutTable.getSelectionModel().selectedItemProperty().addListener((obs, o, sel) -> {
             if (sel != null) {
+                double rsCharges = FileHandler.getRoomServiceCharges(sel.getRoomType(), sel.getRoomNumber());
+                double grandTotal = sel.getTotalBill() + rsCharges;
+                String rsSummary = rsCharges > 0
+                    ? String.format("\nRoom Service: ₹ %.2f     Grand Total: ₹ %.2f", rsCharges, grandTotal)
+                    : "";
                 checkoutSummaryLabel.setText(String.format(
-                    "Guest: %s     Contact: %s\nRoom: %s     Guests: %d     Stay: %d day(s)\nTotal Bill: ₹ %.2f",
+                    "Guest: %s     Contact: %s\nRoom: %s     Guests: %d     Stay: %d day(s)\nRoom Bill: ₹ %.2f%s",
                     sel.getName(), sel.getContact(),
-                    sel.getRoomLabel(), sel.getGuests(), sel.getDays(), sel.getTotalBill()
+                    sel.getRoomLabel(), sel.getGuests(), sel.getDays(), sel.getTotalBill(), rsSummary
                 ));
                 checkoutSummaryBox.getStyleClass().removeAll("checkout-summary-active");
                 checkoutSummaryBox.getStyleClass().add("checkout-summary-active");
@@ -182,7 +216,39 @@ public class BookingController implements Initializable {
             }
         });
 
-        // ── Tab 5: Manage Rooms setup ───────────────────────────────────────
+        // ── Tab 5: Room Service setup ───────────────────────────────────────
+        rsItemCombo.getItems().addAll(MENU.keySet());
+
+        rsIndexCol.setCellValueFactory(col ->
+            new ReadOnlyObjectWrapper<>(rsTable.getItems().indexOf(col.getValue()) + 1));
+        rsRoomCol.setCellValueFactory(new PropertyValueFactory<>("roomLabel"));
+        rsItemCol.setCellValueFactory(new PropertyValueFactory<>("item"));
+        rsQtyCol.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        rsPriceCol.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
+        rsTimeCol.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
+
+        // Load saved orders
+        rsData.addAll(FileHandler.loadRoomServiceOrders());
+
+        FilteredList<RoomServiceOrder> rsFiltered = new FilteredList<>(rsData, p -> true);
+        rsSearchField.textProperty().addListener((obs, o, nv) -> {
+            rsFiltered.setPredicate(order -> {
+                if (nv == null || nv.isBlank()) return true;
+                String lower = nv.toLowerCase();
+                return order.getRoomLabel().toLowerCase().contains(lower)
+                    || order.getItem().toLowerCase().contains(lower);
+            });
+        });
+        rsTable.setItems(rsFiltered);
+
+        // Price preview listener
+        rsItemCombo.setOnAction(e -> updateRsPricePreview());
+        rsQuantityField.textProperty().addListener((obs, o, nv) -> updateRsPricePreview());
+
+        // Update total when room selection changes
+        rsRoomCombo.setOnAction(e -> updateRsTotalLabel());
+
+        // ── Tab 6: Manage Rooms setup ───────────────────────────────────────
         mRoomTypeCombo.getItems().addAll("Single", "Double", "Deluxe");
         
         setupRoomTable(mSingleTable, mSingleNumCol, mSingleStatusCol, "Single");
@@ -355,9 +421,16 @@ public class BookingController implements Initializable {
         }
 
         final Customer toCheckout = selected;
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-            "Confirm checkout for " + toCheckout.getName()
-            + " (Room: " + toCheckout.getRoomLabel() + ")?");
+        double rsCharges = FileHandler.getRoomServiceCharges(toCheckout.getRoomType(), toCheckout.getRoomNumber());
+        double grandTotal = toCheckout.getTotalBill() + rsCharges;
+
+        String confirmMsg = String.format(
+            "Confirm checkout for %s (Room: %s)?\n\nRoom Charges: ₹ %.2f\nRoom Service: ₹ %.2f\nGrand Total: ₹ %.2f",
+            toCheckout.getName(), toCheckout.getRoomLabel(),
+            toCheckout.getTotalBill(), rsCharges, grandTotal
+        );
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, confirmMsg);
         confirm.setHeaderText("Checkout Confirmation");
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
@@ -373,31 +446,35 @@ public class BookingController implements Initializable {
                 checkoutSummaryBox.getStyleClass().removeAll("checkout-summary-active");
 
                 billLabel.setText("Checkout successful. Room " + toCheckout.getRoomLabel() + " is now available.");
-                showBillPopup(toCheckout);
+                showBillPopup(toCheckout, rsCharges);
             }
         });
     }
 
-    private void showBillPopup(Customer c) {
+    private void showBillPopup(Customer c, double rsCharges) {
         Alert billAlert = new Alert(Alert.AlertType.INFORMATION);
         billAlert.setTitle("Checkout Final Bill");
         billAlert.setHeaderText("Checkout Successful for " + c.getName());
+
+        double grandTotal = c.getTotalBill() + rsCharges;
         
-        String billDetails = String.format(
-            "Guest Name: %s\n" +
-            "Contact Number: %s\n" +
-            "Room Booked: %s\n" +
-            "Total Guests: %d\n" +
-            "Check-In Date: %s\n" +
-            "Check-Out Date: %s\n" +
-            "Duration of Stay: %d day(s)\n" +
-            "──────────────────────────────\n" +
-            "Total Bill Amount: ₹ %.2f",
-            c.getName(), c.getContact(), c.getRoomLabel(), c.getGuests(),
-            c.getCheckInDate(), c.getCheckOutDate(), c.getDays(), c.getTotalBill()
-        );
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Guest Name: %s\n", c.getName()));
+        sb.append(String.format("Contact Number: %s\n", c.getContact()));
+        sb.append(String.format("Room Booked: %s\n", c.getRoomLabel()));
+        sb.append(String.format("Total Guests: %d\n", c.getGuests()));
+        sb.append(String.format("Check-In Date: %s\n", c.getCheckInDate()));
+        sb.append(String.format("Check-Out Date: %s\n", c.getCheckOutDate()));
+        sb.append(String.format("Duration of Stay: %d day(s)\n", c.getDays()));
+        sb.append("──────────────────────────────\n");
+        sb.append(String.format("Room Charges: ₹ %.2f\n", c.getTotalBill()));
+        if (rsCharges > 0) {
+            sb.append(String.format("Room Service Charges: ₹ %.2f\n", rsCharges));
+            sb.append("──────────────────────────────\n");
+        }
+        sb.append(String.format("Grand Total: ₹ %.2f", grandTotal));
         
-        billAlert.setContentText(billDetails);
+        billAlert.setContentText(sb.toString());
         billAlert.showAndWait();
     }
 
@@ -473,7 +550,139 @@ public class BookingController implements Initializable {
         ));
     }
 
-    // ── Tab 5: Manage Rooms Actions ──────────────────────────────────────────
+    // ── Tab 5: Room Service ──────────────────────────────────────────────────
+
+    @FXML
+    private void handleRoomServiceTabSelected() {
+        refreshBookedRoomsList();
+    }
+
+    private void refreshBookedRoomsList() {
+        rsRoomCombo.getItems().clear();
+        for (Customer c : data) {
+            String label = c.getRoomLabel();
+            if (!rsRoomCombo.getItems().contains(label)) {
+                rsRoomCombo.getItems().add(label);
+            }
+        }
+    }
+
+    private void updateRsPricePreview() {
+        String item = rsItemCombo.getValue();
+        String qtyStr = rsQuantityField.getText().trim();
+        if (item != null && !qtyStr.isEmpty()) {
+            try {
+                int qty = Integer.parseInt(qtyStr);
+                if (qty > 0) {
+                    double price = MENU.getOrDefault(item, 0.0) * qty;
+                    rsPriceLabel.setText(String.format("💰 %s × %d = ₹ %.2f", item, qty, price));
+                    return;
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+        rsPriceLabel.setText("Select item and quantity to see price.");
+    }
+
+    private void updateRsTotalLabel() {
+        String roomLabel = rsRoomCombo.getValue();
+        if (roomLabel == null) {
+            rsTotalLabel.setText("Select a room to view total charges.");
+            return;
+        }
+        // Parse room label "Type-Number"
+        String[] parts = roomLabel.split("-");
+        if (parts.length == 2) {
+            try {
+                double total = FileHandler.getRoomServiceCharges(parts[0], Integer.parseInt(parts[1]));
+                rsTotalLabel.setText(String.format("Total Room Service for %s: ₹ %.2f", roomLabel, total));
+            } catch (NumberFormatException e) {
+                rsTotalLabel.setText("Select a room to view total charges.");
+            }
+        }
+    }
+
+    @FXML
+    private void handlePlaceRoomServiceOrder() {
+        String roomLabel = rsRoomCombo.getValue();
+        String item      = rsItemCombo.getValue();
+        String qtyStr    = rsQuantityField.getText().trim();
+
+        Task<RoomServiceOrder> rsTask = new Task<>() {
+            @Override
+            protected RoomServiceOrder call() throws Exception {
+                // Validation
+                if (roomLabel == null || item == null || qtyStr.isEmpty()) {
+                    Platform.runLater(() -> showAlert("Please fill all fields!"));
+                    return null;
+                }
+
+                int qty;
+                try {
+                    qty = Integer.parseInt(qtyStr);
+                } catch (NumberFormatException e) {
+                    Platform.runLater(() -> showAlert("Quantity must be a valid number!"));
+                    return null;
+                }
+                if (qty <= 0) {
+                    Platform.runLater(() -> showAlert("Quantity must be at least 1!"));
+                    return null;
+                }
+
+                // Parse room label
+                String[] parts = roomLabel.split("-");
+                if (parts.length != 2) {
+                    Platform.runLater(() -> showAlert("Invalid room selection!"));
+                    return null;
+                }
+                String rType = parts[0];
+                int rNum;
+                try {
+                    rNum = Integer.parseInt(parts[1]);
+                } catch (NumberFormatException e) {
+                    Platform.runLater(() -> showAlert("Invalid room number!"));
+                    return null;
+                }
+
+                double unitPrice  = MENU.getOrDefault(item, 0.0);
+                double totalPrice = unitPrice * qty;
+                String timestamp  = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+                RoomServiceOrder order = new RoomServiceOrder(rType, rNum, item, qty, unitPrice, totalPrice, timestamp);
+
+                // Save to file
+                FileHandler.saveRoomServiceOrder(order);
+
+                return order;
+            }
+        };
+
+        rsTask.setOnSucceeded(e -> {
+            RoomServiceOrder order = rsTask.getValue();
+            if (order != null) {
+                rsData.add(order);
+                rsQuantityField.clear();
+                rsItemCombo.setValue(null);
+                rsPriceLabel.setText(String.format(
+                    "✔ Ordered: %s × %d = ₹ %.2f for Room %s",
+                    order.getItem(), order.getQuantity(), order.getTotalPrice(), order.getRoomLabel()
+                ));
+                updateRsTotalLabel();
+                showInfo("Room service order placed successfully!");
+            }
+        });
+
+        rsTask.setOnFailed(e -> {
+            Throwable ex = rsTask.getException();
+            if (ex != null) ex.printStackTrace();
+            showAlert("An error occurred while placing the order.");
+        });
+
+        Thread bgThread = new Thread(rsTask);
+        bgThread.setDaemon(true);
+        bgThread.start();
+    }
+
+    // ── Tab 6: Manage Rooms Actions ──────────────────────────────────────────
 
     private void setupRoomTable(TableView<Room> table, TableColumn<Room, Number> numCol, 
                                 TableColumn<Room, String> statusCol, String type) {

@@ -591,3 +591,33 @@
     -fx-font-size: 13px;
     -fx-font-weight: bold;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/*  ROOM SERVICE TAB                                                         */
+/* ══════════════════════════════════════════════════════════════════════════ */
+.rs-price-preview {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c9a96e;
+    -fx-background-color: #252b3b;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 14;
+}
+
+.rs-menu-card {
+    -fx-background-color: #1e2435;
+    -fx-border-color: #363d52;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12 14;
+}
+
+.rs-menu-item {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 12px;
+    -fx-padding: 2 0;
+}
