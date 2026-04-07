@@ -14,6 +14,9 @@ import model.Customer;
 import model.Room;
 import utils.FileHandler;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -236,66 +239,108 @@ public class BookingController implements Initializable {
         LocalDate checkIn  = checkInPicker.getValue();
         LocalDate checkOut = checkOutPicker.getValue();
 
-        if (name.isEmpty() || contact.isEmpty() || room == null || guestsStr.isEmpty() || checkIn == null || checkOut == null) {
-            showAlert("Please fill all fields!"); return;
-        }
+        Task<Customer> bookingTask = new Task<>() {
+            @Override
+            protected Customer call() throws Exception {
+                // Validation (in background thread)
+                if (name.isEmpty() || contact.isEmpty() || room == null || guestsStr.isEmpty() || checkIn == null || checkOut == null) {
+                    Platform.runLater(() -> showAlert("Please fill all fields!"));
+                    return null;
+                }
 
-        int guests;
-        try {
-            guests = Integer.parseInt(guestsStr);
-        } catch (NumberFormatException e) {
-            showAlert("Number of guests must be a valid number!"); return;
-        }
+                int guests;
+                try {
+                    guests = Integer.parseInt(guestsStr);
+                } catch (NumberFormatException e) {
+                    Platform.runLater(() -> showAlert("Number of guests must be a valid number!"));
+                    return null;
+                }
 
-        if (guests <= 0) {
-            showAlert("Number of guests must be at least 1!"); return;
-        }
-        if ("Single".equals(room) && guests > 1) {
-            showAlert("Single room can accommodate at most 1 guest."); return;
-        }
-        if ("Double".equals(room) && guests > 2) {
-            showAlert("Double room can accommodate at most 2 guests."); return;
-        }
-        if ("Deluxe".equals(room) && guests > 4) {
-            showAlert("Deluxe room can accommodate at most 4 guests."); return;
-        }
-        if (!contact.matches("\\d{10}")) {
-            showAlert("Contact must be a valid 10-digit number!"); return;
-        }
+                if (guests <= 0) {
+                    Platform.runLater(() -> showAlert("Number of guests must be at least 1!"));
+                    return null;
+                }
+                if ("Single".equals(room) && guests > 1) {
+                    Platform.runLater(() -> showAlert("Single room can accommodate at most 1 guest."));
+                    return null;
+                }
+                if ("Double".equals(room) && guests > 2) {
+                    Platform.runLater(() -> showAlert("Double room can accommodate at most 2 guests."));
+                    return null;
+                }
+                if ("Deluxe".equals(room) && guests > 4) {
+                    Platform.runLater(() -> showAlert("Deluxe room can accommodate at most 4 guests."));
+                    return null;
+                }
+                if (!contact.matches("\\d{10}")) {
+                    Platform.runLater(() -> showAlert("Contact must be a valid 10-digit number!"));
+                    return null;
+                }
 
-        if (checkOut.isBefore(checkIn.plusDays(1))) {
-            showAlert("Check-out date must be at least one day after check-in!"); return;
-        }
+                if (checkOut.isBefore(checkIn.plusDays(1))) {
+                    Platform.runLater(() -> showAlert("Check-out date must be at least one day after check-in!"));
+                    return null;
+                }
 
-        int days = (int) ChronoUnit.DAYS.between(checkIn, checkOut);
+                int days = (int) ChronoUnit.DAYS.between(checkIn, checkOut);
 
-        Room available = getAvailableRoom(room);
-        if (available == null) {
-            showAlert("All " + room + " rooms are fully booked!\n"
-                + "Available — Single: " + availableCount("Single")
-                + ", Double: " + availableCount("Double")
-                + ", Deluxe: " + availableCount("Deluxe"));
-            return;
-        }
+                // Room allocation
+                Room available = getAvailableRoom(room);
+                if (available == null) {
+                    int sCount = availableCount("Single");
+                    int dCount = availableCount("Double");
+                    int dxCount = availableCount("Deluxe");
+                    Platform.runLater(() -> showAlert("All " + room + " rooms are fully booked!\n"
+                        + "Available — Single: " + sCount
+                        + ", Double: " + dCount
+                        + ", Deluxe: " + dxCount));
+                    return null;
+                }
 
-        double total = getRoomPrice(room) * days;
-        available.book();
-        Customer c = new Customer(name, contact, room, available.getRoomNumber(), "Booked", guests, days, 
-                                 checkIn.toString(), checkOut.toString(), total);
-        data.add(c);
-        FileHandler.save(data);
-        updateAvailLabel();
-        refreshRoomGrids();
+                // Bill calculation
+                double total = getRoomPrice(room) * days;
+                available.book();
+                Customer c = new Customer(name, contact, room, available.getRoomNumber(), "Booked", guests, days, 
+                                         checkIn.toString(), checkOut.toString(), total);
 
-        billLabel.setText(String.format(
-            "New Booking: %s  |  Room: %s  |  Guests: %d  |  Days: %d  |  Total Bill: ₹ %.2f",
-            name, available.getLabel(), guests, days, total
-        ));
+                // File saving
+                List<Customer> copyForSave = new ArrayList<>(data);
+                copyForSave.add(c);
+                FileHandler.save(copyForSave);
 
-        nameField.clear(); contactField.clear(); guestsField.clear();
-        roomType.setValue(null);
-        checkInPicker.setValue(LocalDate.now());
-        checkOutPicker.setValue(LocalDate.now().plusDays(1));
+                return c;
+            }
+        };
+
+        bookingTask.setOnSucceeded(e -> {
+            Customer c = bookingTask.getValue();
+            if (c != null) {
+                // UI updates
+                data.add(c);
+                updateAvailLabel();
+                refreshRoomGrids();
+
+                billLabel.setText(String.format(
+                    "New Booking: %s  |  Room: %s  |  Guests: %d  |  Days: %d  |  Total Bill: ₹ %.2f",
+                    c.getName(), c.getRoomLabel(), c.getGuests(), c.getDays(), c.getTotalBill()
+                ));
+
+                nameField.clear(); contactField.clear(); guestsField.clear();
+                roomType.setValue(null);
+                checkInPicker.setValue(LocalDate.now());
+                checkOutPicker.setValue(LocalDate.now().plusDays(1));
+            }
+        });
+
+        bookingTask.setOnFailed(e -> {
+            Throwable ex = bookingTask.getException();
+            if (ex != null) ex.printStackTrace();
+            showAlert("An error occurred during booking.");
+        });
+
+        Thread backgroundThread = new Thread(bookingTask);
+        backgroundThread.setDaemon(true);
+        backgroundThread.start();
     }
 
     // ── Tab 3: Checkout ───────────────────────────────────────────────────────
