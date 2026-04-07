@@ -373,9 +373,32 @@ public class BookingController implements Initializable {
                 checkoutSummaryBox.getStyleClass().removeAll("checkout-summary-active");
 
                 billLabel.setText("Checkout successful. Room " + toCheckout.getRoomLabel() + " is now available.");
-                showInfo("Checkout Successful for " + toCheckout.getName() + "!");
+                showBillPopup(toCheckout);
             }
         });
+    }
+
+    private void showBillPopup(Customer c) {
+        Alert billAlert = new Alert(Alert.AlertType.INFORMATION);
+        billAlert.setTitle("Checkout Final Bill");
+        billAlert.setHeaderText("Checkout Successful for " + c.getName());
+        
+        String billDetails = String.format(
+            "Guest Name: %s\n" +
+            "Contact Number: %s\n" +
+            "Room Booked: %s\n" +
+            "Total Guests: %d\n" +
+            "Check-In Date: %s\n" +
+            "Check-Out Date: %s\n" +
+            "Duration of Stay: %d day(s)\n" +
+            "──────────────────────────────\n" +
+            "Total Bill Amount: ₹ %.2f",
+            c.getName(), c.getContact(), c.getRoomLabel(), c.getGuests(),
+            c.getCheckInDate(), c.getCheckOutDate(), c.getDays(), c.getTotalBill()
+        );
+        
+        billAlert.setContentText(billDetails);
+        billAlert.showAndWait();
     }
 
     // ── Tab 2: Rooms tab refresh ──────────────────────────────────────────────
