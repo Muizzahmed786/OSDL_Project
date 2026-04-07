@@ -74,8 +74,8 @@
 
 .tab-pane .tab .tab-label {
     -fx-text-fill: #5e6578;
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
     -fx-font-family: "DM Sans", "Segoe UI", sans-serif;
 }
 
@@ -359,12 +359,39 @@
 /* ══════════════════════════════════════════════════════════════════════════ */
 /*  LABELS                                                                   */
 /* ══════════════════════════════════════════════════════════════════════════ */
-.title-label   { -fx-text-fill: #c9a96e; }
-.card-title    { -fx-text-fill: #e8e8e8; }
-.form-label    { -fx-text-fill: #c9d1e8; }
-.avail-label   { -fx-text-fill: #9ca3af; }
-.legend-available { -fx-text-fill: #4ade80; }
-.legend-booked    { -fx-text-fill: #f87171; }
+.title-label {
+    -fx-text-fill: #c9a96e;
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+    -fx-font-family: "Playfair Display", serif;
+}
+
+.card-title {
+    -fx-text-fill: #e8e8e8;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.form-label {
+    -fx-text-fill: #c9d1e8;
+    -fx-font-size: 13.5px;
+    -fx-font-weight: 600;
+}
+
+.avail-label {
+    -fx-text-fill: #9ca3af;
+    -fx-font-weight: bold;
+}
+
+.legend-available {
+    -fx-text-fill: #4ade80;
+    -fx-font-weight: bold;
+}
+
+.legend-booked {
+    -fx-text-fill: #f87171;
+    -fx-font-weight: bold;
+}
 
 .bill-label {
     -fx-font-size: 13px;
