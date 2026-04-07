@@ -7,7 +7,7 @@
 <TabPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.BookingController"
          stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE">
 
-    <!-- ══════════════════════════════════════════════════════ TAB 1: BOOK A ROOM -->
+    <!--  TAB 1: BOOK A ROOM -->
     <Tab text="📋 Book a Room">
         <VBox spacing="16" styleClass="tab-content">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
@@ -61,7 +61,7 @@
         </VBox>
     </Tab>
 
-    <!-- ══════════════════════════════════════════════════════ TAB 2: ALL BOOKINGS -->
+    <!--  TAB 2: ALL BOOKINGS -->
     <Tab text="📊 All Bookings">
         <VBox spacing="16" styleClass="tab-content">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
@@ -92,7 +92,7 @@
         </VBox>
     </Tab>
 
-    <!-- ═══════════════════════════════════════════════════════ TAB 3: ROOMS -->
+    <!--  TAB 3: ROOMS -->
     <Tab text="🏨 Rooms" onSelectionChanged="#handleRoomsTabSelected">
         <VBox spacing="16" styleClass="tab-content">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
@@ -138,7 +138,7 @@
         </VBox>
     </Tab>
 
-    <!-- ══════════════════════════════════════════════════════ TAB 4: CHECKOUT -->
+    <!--  TAB 4: CHECKOUT -->
     <Tab text="💳 Checkout">
         <VBox spacing="16" styleClass="tab-content">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
@@ -179,7 +179,7 @@
         </VBox>
     </Tab>
 
-    <!-- ══════════════════════════════════════════════════════ TAB 5: ROOM SERVICE -->
+    <!-- TAB 5: ROOM SERVICE -->
     <Tab text="🍽️ Room Service" onSelectionChanged="#handleRoomServiceTabSelected">
         <VBox spacing="16" styleClass="tab-content">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
@@ -252,7 +252,7 @@
         </VBox>
     </Tab>
 
-    <!-- ══════════════════════════════════════════════════════ TAB 6: MANAGE ROOMS -->
+    <!-- TAB 6: MANAGE ROOMS -->
     <Tab text="🛠️ Manage Rooms">
         <VBox spacing="16" styleClass="tab-content">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>

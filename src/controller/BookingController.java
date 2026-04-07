@@ -27,7 +27,7 @@ import java.util.*;
 
 public class BookingController implements Initializable {
 
-    // ── Tab 1 — Bookings ─────────────────────────────────────────────────────
+    // ── Tab 1 — Bookings 
     @FXML private TextField        nameField;
     @FXML private TextField        contactField;
     @FXML private DatePicker       checkInPicker;
@@ -51,7 +51,7 @@ public class BookingController implements Initializable {
     @FXML private TableColumn<Customer, Double>  billCol;
     @FXML private TableColumn<Customer, String>  statusCol;
 
-    // ── Tab 2 — Rooms ────────────────────────────────────────────────────────
+    // ── Tab 2 — Rooms 
     @FXML private Label     singleCountLabel;
     @FXML private Label     doubleCountLabel;
     @FXML private Label     deluxeCountLabel;
@@ -60,7 +60,7 @@ public class BookingController implements Initializable {
     @FXML private FlowPane  doubleGrid;
     @FXML private FlowPane  deluxeGrid;
 
-    // ── Tab 4: Checkout ──────────────────────────────────────────────────────
+    // ── Tab 4: Checkout 
     @FXML private TextField                      checkoutSearchField;
     @FXML private TableView<Customer>            checkoutTable;
     @FXML private TableColumn<Customer, Number>  coIndexCol;
@@ -77,7 +77,7 @@ public class BookingController implements Initializable {
     @FXML private Label checkoutSummaryLabel;
     @FXML private Button checkoutBtn;
 
-    // ── Tab 5 — Room Service ────────────────────────────────────────────────
+    // ── Tab 5 — Room Service 
     @FXML private ComboBox<String> rsRoomCombo;
     @FXML private ComboBox<String> rsItemCombo;
     @FXML private TextField        rsQuantityField;
@@ -93,7 +93,7 @@ public class BookingController implements Initializable {
     @FXML private TableColumn<RoomServiceOrder, Double>  rsPriceCol;
     @FXML private TableColumn<RoomServiceOrder, String>  rsTimeCol;
 
-    // ── Tab 6 — Manage Rooms ────────────────────────────────────────────────
+    // ── Tab 6 — Manage Rooms 
     @FXML private ComboBox<String> mRoomTypeCombo;
     @FXML private TextField        mRoomNumberField;
     
@@ -109,12 +109,12 @@ public class BookingController implements Initializable {
     @FXML private TableColumn<Room, Number> mDeluxeNumCol;
     @FXML private TableColumn<Room, String> mDeluxeStatusCol;
 
-    // ── Data ─────────────────────────────────────────────────────────────────
+    // ── Data 
     private ObservableList<Customer>         data     = FXCollections.observableArrayList();
     private ObservableList<Room>             rooms    = FXCollections.observableArrayList();
     private ObservableList<RoomServiceOrder> rsData   = FXCollections.observableArrayList();
 
-    // ── Room Service Menu Prices ─────────────────────────────────────────────
+    // ── Room Service Menu Prices 
     private static final Map<String, Double> MENU = new LinkedHashMap<>();
     static {
         MENU.put("Tea",            50.0);
@@ -125,7 +125,7 @@ public class BookingController implements Initializable {
         MENU.put("Bottled Water",  30.0);
     }
 
-    // ── Initializable ─────────────────────────────────────────────────────────
+    // ── Initializable 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
@@ -294,7 +294,7 @@ public class BookingController implements Initializable {
         });
     }
 
-    // ── Tab 1: Add Booking ────────────────────────────────────────────────────
+    // ── Tab 1: Add Booking 
 
     @FXML
     private void handleAddBooking() {
@@ -409,7 +409,7 @@ public class BookingController implements Initializable {
         backgroundThread.start();
     }
 
-    // ── Tab 3: Checkout ───────────────────────────────────────────────────────
+    // ── Tab 3: Checkout 
 
     @FXML
     private void handleCheckout() {
@@ -478,7 +478,7 @@ public class BookingController implements Initializable {
         billAlert.showAndWait();
     }
 
-    // ── Tab 2: Rooms tab refresh ──────────────────────────────────────────────
+    // ── Tab 2: Rooms tab refresh 
 
     @FXML
     private void handleRoomsTabSelected() {
@@ -508,7 +508,7 @@ public class BookingController implements Initializable {
         deluxeCountLabel.setText(availableCount("Deluxe") + " / " + totalCount("Deluxe") + " available");
     }
 
-    // ── Room Helpers ──────────────────────────────────────────────────────────
+    // ── Room Helpers 
 
     private void initRooms() {
         rooms.setAll(FileHandler.loadRooms());
@@ -550,7 +550,7 @@ public class BookingController implements Initializable {
         ));
     }
 
-    // ── Tab 5: Room Service ──────────────────────────────────────────────────
+    // ── Tab 5: Room Service 
 
     @FXML
     private void handleRoomServiceTabSelected() {
@@ -682,7 +682,7 @@ public class BookingController implements Initializable {
         bgThread.start();
     }
 
-    // ── Tab 6: Manage Rooms Actions ──────────────────────────────────────────
+    // ── Tab 6: Manage Rooms Actions 
 
     private void setupRoomTable(TableView<Room> table, TableColumn<Room, Number> numCol, 
                                 TableColumn<Room, String> statusCol, String type) {
